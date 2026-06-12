@@ -487,17 +487,22 @@ function renderGrid(){
 function renderTable(){
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = kamarData.map(k=>{
+    const occupiedOnDate =
+      k.checkIn && k.checkOut &&
+      selectedDate >= k.checkIn.substring(0,10) &&
+      selectedDate <= k.checkOut.substring(0,10);
+    const status = occupiedOnDate ? 'terisi' : 'kosong';
     const ci = k.checkIn ? new Date(k.checkIn).toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) : '-';
     const co = k.checkOut ? new Date(k.checkOut).toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) : '-';
     return `<tr onclick="openModal('${k._id}')" style="cursor:pointer">
       <td><strong>${k.nomor}</strong></td>
       <td>${TIPE_LABEL[k.tipe]}</td>
-      <td><span class="status-pill ${k.status}">${k.status==='terisi'?'Terisi':'Kosong'}</span></td>
-      <td>${k.namaTamu || '-'}</td>
-      <td>${k.status==='terisi' ? (k.pax||0) : '-'}</td>
-      <td>${k.status==='terisi' ? `<span class="bf-pill ${k.breakfast?'yes':'no'}">${k.breakfast?'Ya':'Tidak'}</span>` : '-'}</td>
-      <td>${ci}</td>
-      <td>${co}</td>
+      <td><span class="status-pill ${status}">${status==='terisi'?'Terisi':'Kosong'}</span></td>
+      <td>${occupiedOnDate ? (k.namaTamu||'-') : '-'}</td>
+      <td>${occupiedOnDate ? (k.pax||0) : '-'}</td>
+      <td>${occupiedOnDate ? `<span class="bf-pill ${k.breakfast?'yes':'no'}">${k.breakfast?'Ya':'Tidak'}</span>` : '-'}</td>
+      <td>${occupiedOnDate ? ci : '-'}</td>
+      <td>${occupiedOnDate ? co : '-'}</td>
       <td>${fmt(k.harga)}</td>
     </tr>`;
   }).join('');
