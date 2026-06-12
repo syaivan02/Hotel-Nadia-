@@ -461,29 +461,11 @@ function renderGrid(){
         <div class="floor-label">${TIPE_LABEL[tipe]} <span class="line"></span> <span style="font-size:12px">${rooms.length} kamar</span></div>
         <div class="room-grid">
           ${rooms.map(k=>{
-          const ci = new Date(k.checkIn).toISOString().split('T')[0];
-          const co = new Date(k.checkOut).toISOString().split('T')[0];
-
-        const occupiedOnDate =
-         k.checkIn &&
-         k.checkOut &&
-         selectedDate >= ci &&
-         selectedDate < co;
-        if(k.nomor === '101'){
-        console.log(
-         'Tanggal dipilih:', selectedDate,
-         'CI:', ci,
-         'CO:', co,
-         'Occupied:', occupiedOnDate
-  );
-}
-            console.log(
-            k.nomor,
-            selectedDate,
-            k.checkIn,
-            k.checkOut,
-            occupiedOnDate
-          );
+          const occupiedOnDate =
+            k.checkIn &&
+            k.checkOut &&
+            selectedDate >= k.checkIn.substring(0,10) &&
+            selectedDate < k.checkOut.substring(0,10);
             const bfClass = k.status==='terisi' ? (k.breakfast?'on':'off') : (k.breakfast===false?'':'');
             const showFlag = occupiedOnDate;
             return `
