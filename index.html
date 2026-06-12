@@ -391,6 +391,8 @@ function setToday(){
 function changeDate(){
   selectedDate = document.getElementById('filter-date').value;
   renderSummary();
+  renderGrid();
+  renderTable();
 }
 
 async function loadKamar(){
