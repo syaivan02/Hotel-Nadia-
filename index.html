@@ -466,6 +466,13 @@ function renderGrid(){
             k.checkOut &&
             selectedDate >= k.checkIn.substring(0,10) &&
             selectedDate < k.checkOut.substring(0,10);
+            console.log(
+            k.nomor,
+            selectedDate,
+            k.checkIn,
+            k.checkOut,
+            occupiedOnDate
+          );
             const bfClass = k.status==='terisi' ? (k.breakfast?'on':'off') : (k.breakfast===false?'':'');
             const showFlag = occupiedOnDate;
             return `
