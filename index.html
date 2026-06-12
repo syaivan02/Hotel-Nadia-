@@ -330,7 +330,11 @@ textarea{resize:vertical;min-height:60px}
           <textarea id="m-catatan" placeholder="Catatan tambahan (opsional)"></textarea>
         </div>
       </div>
-
+      
+     <div class="field-row">
+        <label>Nomor Kamar</label>
+        <input id="m-nomor-edit" type="text" placeholder="Nomor kamar">
+      </div>
       <div class="field-row">
         <label>Harga Kamar (Rp / malam)</label>
         <input id="m-harga" type="number" min="0" placeholder="0">
@@ -462,6 +466,7 @@ function openModal(id){
   if(!activeKamar) return;
   document.getElementById('m-nomor').textContent = activeKamar.nomor;
   document.getElementById('m-tipe').textContent = TIPE_LABEL[activeKamar.tipe];
+  document.getElementById('m-nomor-edit').value = activeKamar.nomor;
   document.getElementById('m-harga').value = activeKamar.harga || '';
   document.getElementById('m-tamu').value = activeKamar.namaTamu || '';
   document.getElementById('m-pax').value = activeKamar.pax || '';
@@ -490,7 +495,11 @@ async function simpanKamar(){
   const status = document.getElementById('overlay').dataset.status;
   const harga = parseFloat(document.getElementById('m-harga').value) || 0;
 
-  let payload = { status, harga };
+ let payload = {
+  nomor: document.getElementById('m-nomor-edit').value.trim(),
+  status,
+  harga
+};
 
   if(status === 'terisi'){
     payload.namaTamu = document.getElementById('m-tamu').value.trim();
