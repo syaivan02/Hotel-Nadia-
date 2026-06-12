@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotel Nadia · Manajemen Kamar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sand:#f6f1e7;
+  --sand-deep:#ece3d2;
+  --surface:#ffffff;
+  --ink:#2b2521;
+  --ink-soft:#8a7f74;
+  --line:#e6dccb;
+
+  --teal:#1f5f59;
+  --teal-soft:#e3efed;
+  --terracotta:#c4633f;
+  --terracotta-soft:#f7e6de;
+  --gold:#b8923f;
+  --gold-soft:#f5ecd6;
+
+  --radius:14px;
+  --radius-sm:9px;
+}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--sand);
+  color:var(--ink);
+  min-height:100vh;
+  font-size:14px;
+}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ===== HEADER ===== */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.75rem 2.5rem 1rem;
+}
+.brand{display:flex;align-items:baseline;gap:.6rem}
+.brand-mark{
+  font-family:'Fraunces',serif;font-weight:700;font-size:26px;letter-spacing:.5px;
+  color:var(--ink);
+}
+.brand-sub{font-size:12px;color:var(--ink-soft);letter-spacing:.12em;text-transform:uppercase}
+.date-pill{
+  font-size:12px;color:var(--ink-soft);background:var(--surface);
+  border:1px solid var(--line);border-radius:999px;padding:7px 16px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ===== SUMMARY STRIP ===== */
+.summary{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
+  padding:0 2.5rem 1.5rem;
+}
+.sum-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.1rem 1.3rem;
+}
+.sum-card .num{font-family:'Fraunces',serif;font-size:30px;font-weight:600;line-height:1.1}
+.sum-card .lbl{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
+.sum-card.accent-teal .num{color:var(--teal)}
+.sum-card.accent-terracotta .num{color:var(--terracotta)}
+.sum-card.accent-gold .num{color:var(--gold)}
+
+/* ===== TYPE LEGEND / FILTER ===== */
+.filterbar{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:0 2.5rem 1.25rem;flex-wrap:wrap;
+}
+.legend{display:flex;gap:1.5rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft)}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+.dot-kosong{background:var(--line);border:1px solid #d8cbb4}
+.dot-terisi{background:var(--teal)}
+.dot-nobreakfast{background:var(--terracotta)}
+
+.tabs{display:flex;gap:6px}
+.tab-btn{
+  padding:7px 16px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-soft);font-size:12.5px;font-weight:600;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;
+}
+.tab-btn.active{background:var(--ink);color:var(--sand);border-color:var(--ink)}
+
+/* ===== ROOM GRID ===== */
+.grid-wrap{padding:0 2.5rem}
+.floor-block{margin-bottom:2rem}
+.floor-label{
+  font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink-soft);
+  margin-bottom:.85rem;display:flex;align-items:center;gap:10px;
+}
+.floor-label .line{flex:1;height:1px;background:var(--line)}
+
+.room-grid{
+  display:grid;grid-template-columns:repeat(10,1fr);gap:10px;
+}
+.room-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:.85rem .7rem;cursor:pointer;transition:all .15s;position:relative;
+  display:flex;flex-direction:column;gap:6px;min-height:92px;
+}
+.room-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(43,37,33,.06);border-color:var(--ink-soft)}
+.room-card.terisi{background:var(--teal);border-color:var(--teal)}
+.room-card.terisi .room-no{color:#fff}
+.room-card.terisi .room-tipe{color:rgba(255,255,255,.7)}
+.room-card.terisi .room-meta{color:rgba(255,255,255,.85)}
+
+.room-no{font-family:'Fraunces',serif;font-size:19px;font-weight:600;line-height:1}
+.room-tipe{font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em}
+.room-meta{font-size:11px;color:var(--ink-soft);display:flex;align-items:center;gap:5px;margin-top:auto}
+.bf-flag{
+  position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;
+  background:var(--terracotta);
+}
+.room-card.terisi .bf-flag.on{background:var(--gold)}
+.room-card.terisi .bf-flag.off{background:rgba(255,255,255,.35)}
+
+/* ===== TABLE VIEW ===== */
+.table-view{display:none}
+.table-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.25rem 1.5rem;margin:0 2.5rem 2rem;overflow-x:auto;
+}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  text-align:left;padding:10px 12px;color:var(--ink-soft);font-weight:600;font-size:10.5px;
+  text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+td{padding:12px 12px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--sand)}
+.status-pill{
+  font-size:11px;padding:4px 11px;border-radius:999px;font-weight:600;display:inline-flex;align-items:center;gap:5px;
+}
+.status-pill.kosong{background:var(--sand-deep);color:var(--ink-soft)}
+.status-pill.terisi{background:var(--teal-soft);color:var(--teal)}
+.bf-pill{font-size:11px;padding:4px 11px;border-radius:999px;font-weight:600}
+.bf-pill.yes{background:var(--gold-soft);color:var(--gold)}
+.bf-pill.no{background:var(--terracotta-soft);color:var(--terracotta)}
+
+/* ===== MODAL ===== */
+.overlay{
+  position:fixed;inset:0;background:rgba(43,37,33,.4);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:1.5rem;
+}
+.overlay.show{display:flex}
+.modal{
+  background:var(--surface);border-radius:18px;width:100%;max-width:440px;
+  max-height:90vh;overflow-y:auto;
+}
+.modal-head{
+  padding:1.75rem 1.75rem 1rem;display:flex;align-items:flex-start;justify-content:space-between;
+}
+.modal-room{font-family:'Fraunces',serif;font-size:32px;font-weight:700;line-height:1}
+.modal-tipe{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
+.modal-close{
+  background:var(--sand);border:none;width:32px;height:32px;border-radius:50%;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink-soft);
+}
+.modal-body{padding:0 1.75rem 1.75rem}
+
+.status-toggle{display:flex;gap:8px;margin-bottom:1.25rem}
+.status-toggle button{
+  flex:1;padding:11px;border-radius:var(--radius-sm);border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-soft);font-size:13px;font-weight:600;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;
+}
+.status-toggle button.active.kosong{background:var(--sand-deep);border-color:var(--ink-soft);color:var(--ink)}
+.status-toggle button.active.terisi{background:var(--teal);border-color:var(--teal);color:#fff}
+
+.field-row{display:grid;gap:10px;margin-bottom:10px}
+.field-row.c2{grid-template-columns:1fr 1fr}
+label{font-size:11.5px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+input,select,textarea{
+  width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  font-size:13.5px;font-family:'Plus Jakarta Sans',sans-serif;background:var(--sand);color:var(--ink);
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);background:#fff}
+textarea{resize:vertical;min-height:60px}
+
+.breakfast-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--sand);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:11px 14px;margin-bottom:10px;
+}
+.switch{position:relative;width:42px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.switch-track{
+  position:absolute;cursor:pointer;inset:0;background:var(--line);border-radius:999px;transition:.2s;
+}
+.switch-track:before{
+  content:"";position:absolute;width:18px;height:18px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:.2s;
+}
+.switch input:checked + .switch-track{background:var(--gold)}
+.switch input:checked + .switch-track:before{transform:translateX(18px)}
+
+.modal-actions{display:flex;gap:8px;margin-top:1.25rem}
+.btn{
+  padding:11px 20px;border-radius:var(--radius-sm);border:none;font-size:13.5px;font-weight:600;
+  font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all .15s;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-primary{background:var(--ink);color:var(--sand);flex:2}
+.btn-primary:hover{opacity:.88}
+.btn-ghost{background:var(--sand);color:var(--ink-soft);flex:1}
+.btn-ghost:hover{background:var(--sand-deep)}
+.btn-danger{background:var(--terracotta-soft);color:var(--terracotta);flex:1}
+.btn-danger:hover{background:#f1d4c6}
+
+.toast{
+  position:fixed;bottom:2rem;right:2rem;background:var(--ink);color:var(--sand);
+  padding:12px 22px;border-radius:999px;font-size:13px;font-weight:500;z-index:999;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.toast.show{opacity:1}
+
+.empty-setup{
+  margin:2.5rem;background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);
+  padding:3rem 2rem;text-align:center;color:var(--ink-soft);
+}
+.empty-setup .btn-primary{margin-top:1rem;width:auto;padding:11px 28px}
+
+@media(max-width:1100px){
+  .room-grid{grid-template-columns:repeat(5,1fr)}
+  .summary{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:680px){
+  .topbar,.summary,.filterbar,.grid-wrap{padding-left:1.25rem;padding-right:1.25rem}
+  .table-card{margin-left:1.25rem;margin-right:1.25rem}
+  .room-grid{grid-template-columns:repeat(3,1fr)}
+  .summary{grid-template-columns:repeat(2,1fr)}
+  .field-row.c2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">Hotel Nadia</div>
+    <div class="brand-sub">Front Desk</div>
+  </div>
+  <div class="date-pill"><i class="ti ti-calendar"></i><span id="today-label">-</span></div>
+</div>
+
+<div class="summary" id="summary">
+  <div class="sum-card"><div class="num" id="s-total">-</div><div class="lbl">Total Kamar</div></div>
+  <div class="sum-card accent-teal"><div class="num" id="s-terisi">-</div><div class="lbl">Terisi</div></div>
+  <div class="sum-card"><div class="num" id="s-kosong">-</div><div class="lbl">Kosong</div></div>
+  <div class="sum-card accent-gold"><div class="num" id="s-pax">-</div><div class="lbl">Total Tamu (Pax)</div></div>
+  <div class="sum-card accent-terracotta"><div class="num" id="s-revenue">-</div><div class="lbl">Pendapatan Malam Ini</div></div>
+</div>
+
+<div class="filterbar">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-kosong"></div> Kosong</div>
+    <div class="legend-item"><div class="legend-dot dot-terisi"></div> Terisi</div>
+    <div class="legend-item"><div class="legend-dot dot-nobreakfast"></div> Tanpa breakfast</div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-grid" onclick="setView('grid')"><i class="ti ti-grid-dots"></i> Peta Kamar</button>
+    <button class="tab-btn" id="tab-table" onclick="setView('table')"><i class="ti ti-list"></i> Daftar</button>
+  </div>
+</div>
+
+<!-- GRID VIEW -->
+<div class="grid-wrap" id="grid-view"></div>
+
+<!-- TABLE VIEW -->
+<div class="table-view" id="table-view">
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr><th>Kamar</th><th>Tipe</th><th>Status</th><th>Tamu</th><th>Pax</th><th>Breakfast</th><th>Check-in</th><th>Check-out</th><th>Harga</th></tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- EMPTY / SETUP STATE -->
+<div class="empty-setup" id="empty-setup" style="display:none">
+  <i class="ti ti-building-skyscraper" style="font-size:36px"></i>
+  <p style="margin-top:.75rem;font-size:14px">Belum ada kamar yang terdaftar.</p>
+  <p style="font-size:12px;margin-top:4px">Klik tombol di bawah untuk membuat 50 kamar awal (Standard, Superior, Super Deluxe).</p>
+  <button class="btn btn-primary" onclick="setupKamar()"><i class="ti ti-plus"></i> Buat 50 Kamar</button>
+</div>
+
+<!-- MODAL DETAIL KAMAR -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-room" id="m-nomor">-</div>
+        <div class="modal-tipe" id="m-tipe">-</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="status-toggle">
+        <button id="m-btn-kosong" onclick="setStatus('kosong')">Kosong</button>
+        <button id="m-btn-terisi" onclick="setStatus('terisi')">Terisi</button>
+      </div>
+
+      <div id="m-fields" style="display:none">
+        <div class="field-row c2">
+          <div><label>Nama Tamu</label><input id="m-tamu" placeholder="Nama tamu"></div>
+          <div><label>Jumlah Pax</label><input id="m-pax" type="number" min="1" placeholder="1"></div>
+        </div>
+        <div class="field-row c2">
+          <div><label>Check-in</label><input id="m-checkin" type="date"></div>
+          <div><label>Check-out</label><input id="m-checkout" type="date"></div>
+        </div>
+        <div class="breakfast-toggle">
+          <span style="font-size:13px;font-weight:600">Termasuk Breakfast</span>
+          <label class="switch">
+            <input type="checkbox" id="m-breakfast">
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="field-row">
+          <label>Catatan</label>
+          <textarea id="m-catatan" placeholder="Catatan tambahan (opsional)"></textarea>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>Harga Kamar (Rp / malam)</label>
+        <input id="m-harga" type="number" min="0" placeholder="0">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+        <button class="btn btn-primary" onclick="simpanKamar()"><i class="ti ti-check"></i> Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+const TIPE_LABEL = {standard:'Standard', superior:'Superior', super_deluxe:'Super Deluxe'};
+let kamarData = [];
+let activeKamar = null;
+let currentView = 'grid';
+
+function fmt(n){return 'Rp '+Math.round(n||0).toLocaleString('id-ID')}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+function setView(v){
+  currentView=v;
+  document.getElementById('tab-grid').classList.toggle('active', v==='grid');
+  document.getElementById('tab-table').classList.toggle('active', v==='table');
+  document.getElementById('grid-view').style.display = v==='grid' ? 'block':'none';
+  document.getElementById('table-view').style.display = v==='table' ? 'block':'none';
+}
+
+const DAYS = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+function setToday(){
+  const d = new Date();
+  document.getElementById('today-label').textContent = `${DAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+async function loadKamar(){
+  try{
+    const res = await fetch(`${API}/api/kamar`);
+    kamarData = await res.json();
+    if(!kamarData.length){
+      document.getElementById('empty-setup').style.display='block';
+      document.getElementById('grid-view').style.display='none';
+      document.getElementById('table-view').style.display='none';
+      document.querySelector('.filterbar').style.display='none';
+      return;
+    }
+    document.getElementById('empty-setup').style.display='none';
+    document.querySelector('.filterbar').style.display='flex';
+    setView(currentView);
+    renderSummary();
+    renderGrid();
+    renderTable();
+  }catch(e){
+    console.error(e);
+    showToast('Gagal memuat data kamar.');
+  }
+}
+
+function renderSummary(){
+  const total = kamarData.length;
+  const terisi = kamarData.filter(k=>k.status==='terisi').length;
+  const kosong = total - terisi;
+  const pax = kamarData.reduce((s,k)=>s + (k.status==='terisi' ? (k.pax||0) : 0), 0);
+  const revenue = kamarData.reduce((s,k)=>s + (k.status==='terisi' ? (k.harga||0) : 0), 0);
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-terisi').textContent = terisi;
+  document.getElementById('s-kosong').textContent = kosong;
+  document.getElementById('s-pax').textContent = pax;
+  document.getElementById('s-revenue').textContent = fmt(revenue);
+}
+
+function renderGrid(){
+  const wrap = document.getElementById('grid-view');
+  const order = ['standard','superior','super_deluxe'];
+  wrap.innerHTML = order.map(tipe=>{
+    const rooms = kamarData.filter(k=>k.tipe===tipe);
+    if(!rooms.length) return '';
+    return `
+      <div class="floor-block">
+        <div class="floor-label">${TIPE_LABEL[tipe]} <span class="line"></span> <span style="font-size:12px">${rooms.length} kamar</span></div>
+        <div class="room-grid">
+          ${rooms.map(k=>{
+            const bfClass = k.status==='terisi' ? (k.breakfast?'on':'off') : (k.breakfast===false?'':'');
+            const showFlag = k.status==='terisi';
+            return `
+            <div class="room-card ${k.status}" onclick="openModal('${k._id}')">
+              ${showFlag?`<div class="bf-flag ${k.breakfast?'on':'off'}"></div>`:''}
+              <div class="room-no">${k.nomor}</div>
+              <div class="room-tipe">${TIPE_LABEL[k.tipe]}</div>
+              ${k.status==='terisi' ? `<div class="room-meta"><i class="ti ti-user"></i> ${k.pax||0} pax</div>` : `<div class="room-meta">${fmt(k.harga)}</div>`}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTable(){
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = kamarData.map(k=>{
+    const ci = k.checkIn ? new Date(k.checkIn).toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) : '-';
+    const co = k.checkOut ? new Date(k.checkOut).toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) : '-';
+    return `<tr onclick="openModal('${k._id}')" style="cursor:pointer">
+      <td><strong>${k.nomor}</strong></td>
+      <td>${TIPE_LABEL[k.tipe]}</td>
+      <td><span class="status-pill ${k.status}">${k.status==='terisi'?'Terisi':'Kosong'}</span></td>
+      <td>${k.namaTamu || '-'}</td>
+      <td>${k.status==='terisi' ? (k.pax||0) : '-'}</td>
+      <td>${k.status==='terisi' ? `<span class="bf-pill ${k.breakfast?'yes':'no'}">${k.breakfast?'Ya':'Tidak'}</span>` : '-'}</td>
+      <td>${ci}</td>
+      <td>${co}</td>
+      <td>${fmt(k.harga)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openModal(id){
+  activeKamar = kamarData.find(k=>k._id===id);
+  if(!activeKamar) return;
+  document.getElementById('m-nomor').textContent = activeKamar.nomor;
+  document.getElementById('m-tipe').textContent = TIPE_LABEL[activeKamar.tipe];
+  document.getElementById('m-harga').value = activeKamar.harga || '';
+  document.getElementById('m-tamu').value = activeKamar.namaTamu || '';
+  document.getElementById('m-pax').value = activeKamar.pax || '';
+  document.getElementById('m-checkin').value = activeKamar.checkIn ? activeKamar.checkIn.substring(0,10) : '';
+  document.getElementById('m-checkout').value = activeKamar.checkOut ? activeKamar.checkOut.substring(0,10) : '';
+  document.getElementById('m-breakfast').checked = !!activeKamar.breakfast;
+  document.getElementById('m-catatan').value = activeKamar.catatan || '';
+  setStatus(activeKamar.status, true);
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+  activeKamar = null;
+}
+
+function setStatus(status, silent){
+  document.getElementById('m-btn-kosong').className = status==='kosong' ? 'active kosong' : '';
+  document.getElementById('m-btn-terisi').className = status==='terisi' ? 'active terisi' : '';
+  document.getElementById('m-fields').style.display = status==='terisi' ? 'block' : 'none';
+  document.getElementById('overlay').dataset.status = status;
+}
+
+async function simpanKamar(){
+  if(!activeKamar) return;
+  const status = document.getElementById('overlay').dataset.status;
+  const harga = parseFloat(document.getElementById('m-harga').value) || 0;
+
+  let payload = { status, harga };
+
+  if(status === 'terisi'){
+    payload.namaTamu = document.getElementById('m-tamu').value.trim();
+    payload.pax = parseInt(document.getElementById('m-pax').value) || 1;
+    payload.breakfast = document.getElementById('m-breakfast').checked;
+    payload.checkIn = document.getElementById('m-checkin').value || null;
+    payload.checkOut = document.getElementById('m-checkout').value || null;
+    payload.catatan = document.getElementById('m-catatan').value.trim();
+  } else {
+    payload.namaTamu = '';
+    payload.pax = 0;
+    payload.breakfast = false;
+    payload.checkIn = null;
+    payload.checkOut = null;
+    payload.catatan = '';
+  }
+
+  try{
+    await fetch(`${API}/api/kamar/${activeKamar._id}`, {
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    showToast(`Kamar ${activeKamar.nomor} disimpan!`);
+    closeModal();
+    loadKamar();
+  }catch(e){
+    showToast('Gagal menyimpan.');
+  }
+}
+
+async function setupKamar(){
+  // 50 kamar: 101-120 standard, 201-215 superior, 301-315 super deluxe
+  const kamarList = [];
+  for(let i=1;i<=20;i++){
+    kamarList.push({ nomor: `1${String(i).padStart(2,'0')}`, tipe:'standard', harga: 350000 });
+  }
+  for(let i=1;i<=15;i++){
+    kamarList.push({ nomor: `2${String(i).padStart(2,'0')}`, tipe:'superior', harga: 500000 });
+  }
+  for(let i=1;i<=15;i++){
+    kamarList.push({ nomor: `3${String(i).padStart(2,'0')}`, tipe:'super_deluxe', harga: 750000 });
+  }
+  try{
+    await fetch(`${API}/api/kamar/bulk`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ kamarList })
+    });
+    showToast('50 kamar berhasil dibuat!');
+    loadKamar();
+  }catch(e){
+    showToast('Gagal membuat kamar.');
+  }
+}
+
+setToday();
+loadKamar();
+</script>
+</body>
+</html>
