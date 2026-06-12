@@ -418,17 +418,16 @@ async function loadKamar(){
 
 function renderSummary(){
 
-  const targetDate = new Date(selectedDate);
+  const targetDate = selectedDate;
 
   const occupiedRooms = kamarData.filter(k => {
 
     if(!k.checkIn || !k.checkOut) return false;
 
-    const ci = new Date(k.checkIn);
-    const co = new Date(k.checkOut);
+   const ci = k.checkIn ? k.checkIn.substring(0,10) : '';
+   const co = k.checkOut ? k.checkOut.substring(0,10) : '';
 
-    return targetDate >= ci && targetDate < co;
-
+   return targetDate >= ci && targetDate < co;
   });
 
   const total = kamarData.length;
