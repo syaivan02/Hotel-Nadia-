@@ -461,14 +461,19 @@ function renderGrid(){
         <div class="floor-label">${TIPE_LABEL[tipe]} <span class="line"></span> <span style="font-size:12px">${rooms.length} kamar</span></div>
         <div class="room-grid">
           ${rooms.map(k=>{
+          const occupiedOnDate =
+            k.checkIn &&
+            k.checkOut &&
+            selectedDate >= k.checkIn.substring(0,10) &&
+            selectedDate < k.checkOut.substring(0,10);
             const bfClass = k.status==='terisi' ? (k.breakfast?'on':'off') : (k.breakfast===false?'':'');
-            const showFlag = k.status==='terisi';
+            const showFlag = occupiedOnDate;
             return `
-            <div class="room-card ${k.status}" onclick="openModal('${k._id}')">
+            <div class="room-card ${occupiedOnDate ? 'terisi' : ''}" onclick="openModal('${k._id}')">
               ${showFlag?`<div class="bf-flag ${k.breakfast?'on':'off'}"></div>`:''}
               <div class="room-no">${k.nomor}</div>
               <div class="room-tipe">${TIPE_LABEL[k.tipe]}</div>
-              ${k.status==='terisi' ? `<div class="room-meta"><i class="ti ti-user"></i> ${k.pax||0} pax</div>` : `<div class="room-meta">${fmt(k.harga)}</div>`}
+              ${occupiedOnDate ? `<div class="room-meta"><i class="ti ti-user"></i> ${k.pax||0} pax</div>` : `<div class="room-meta">${fmt(k.harga)}</div>`}
             </div>`;
           }).join('')}
         </div>
